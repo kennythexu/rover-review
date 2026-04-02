@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Rover Cleaners — How'd We Do?</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #0ea5e9;
+      --primary-dark: #0284c7;
+      --primary-light: #e0f2fe;
+      --success: #10b981;
+      --success-dark: #059669;
+      --warm: #f59e0b;
+      --warm-dark: #d97706;
+      --text: #1e293b;
+      --muted: #64748b;
+      --bg: #ffffff;
+      --card-bg: #f8fafc;
+      --border: #e2e8f0;
+      --radius: 16px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 24px 20px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg);
+      border-radius: var(--radius);
+      text-align: center;
+    }
+
+    /* Logo */
+    .logo {
+      margin-bottom: 20px;
+    }
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--primary-light);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    .logo-name {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+
+    /* Greeting */
+    .greeting {
+      margin-bottom: 32px;
+    }
+    .greeting h1 {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .greeting p {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Rating Buttons */
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 72px;
+      padding: 16px 24px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-loved {
+      background: linear-gradient(135deg, var(--success) 0%, #34d399 100%);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+    }
+    .btn-loved:hover { box-shadow: 0 6px 24px rgba(16, 185, 129, 0.45); }
+
+    .btn-meh {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 2px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .btn-meh:hover { background: #f1f5f9; }
+
+    .btn-emoji { font-size: 24px; line-height: 1; }
+
+    /* Feedback Form */
+    .feedback-section {
+      display: none;
+      text-align: left;
+    }
+    .feedback-section.visible { display: block; }
+
+    .empathy {
+      background: var(--primary-light);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+    }
+    .empathy p {
+      font-size: 15px;
+      color: var(--primary-dark);
+      line-height: 1.55;
+      font-weight: 500;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+      resize: vertical;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--primary); }
+    textarea::placeholder { color: #94a3b8; }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--primary) 0%, #38bdf8 100%);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(14, 165, 233, 0.35);
+      margin-top: 14px;
+      font-size: 16px;
+    }
+    .btn-submit:hover { box-shadow: 0 6px 24px rgba(14, 165, 233, 0.45); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Thank You States */
+    .thankyou-section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .thankyou-section.visible { display: flex; }
+
+    .thankyou-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    .thankyou-icon.positive { background: #dcfce7; }
+    .thankyou-icon.neutral  { background: var(--primary-light); }
+
+    .thankyou-section h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .thankyou-section p {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* Divider between buttons label */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0;
+    }
+    .divider span { font-size: 12px; color: #94a3b8; white-space: nowrap; }
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .footer {
+      margin-top: 36px;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- Logo -->
+    <div class="logo">
+      <div class="logo-icon">🧹</div>
+      <div class="logo-name">Rover Cleaners</div>
+    </div>
+
+    <!-- Initial Screen -->
+    <div id="screen-main">
+      <div class="greeting">
+        <h1 id="greeting-headline">Hi there! 👋</h1>
+        <p>How was your clean today?<br>We'd love to hear from you.</p>
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-loved" id="btn-loved" onclick="handleLoved()">
+          <span class="btn-emoji">😍</span>
+          <span>Loved it!</span>
+        </button>
+
+        <div class="divider"><span>or</span></div>
+
+        <button class="btn btn-meh" id="btn-meh" onclick="handleMeh()">
+          <span class="btn-emoji">😕</span>
+          <span>Could've been better</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Feedback Form (unhappy path) -->
+    <div class="feedback-section" id="screen-feedback">
+      <div class="empathy">
+        <p>We're sorry it wasn't perfect. Your feedback helps us do better — and we genuinely appreciate you telling us.</p>
+      </div>
+
+      <label for="feedback-text">What could we improve? <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <textarea id="feedback-text" placeholder="Tell us what happened…" rows="5"></textarea>
+
+      <button class="btn btn-submit" id="btn-submit" onclick="submitFeedback()">
+        <span>Send Feedback</span>
+      </button>
+    </div>
+
+    <!-- Thank You: Positive -->
+    <div class="thankyou-section" id="screen-thankyou-positive">
+      <div class="thankyou-icon positive">🌟</div>
+      <h2>Thank you!</h2>
+      <p>We're so glad you had a great experience.<br>Taking you to Google now…</p>
+    </div>
+
+    <!-- Thank You: Feedback submitted -->
+    <div class="thankyou-section" id="screen-thankyou-feedback">
+      <div class="thankyou-icon neutral">💙</div>
+      <h2>Thank you for letting us know.</h2>
+      <p>We'll follow up soon. Your feedback means the world to us.</p>
+    </div>
+
+    <div class="footer">© Rover Cleaners</div>
+  </div>
+
+  <script>
+    // ── Market config ──────────────────────────────────────────────
+    const MARKETS = {
+      dfw: {
+        name: "Dallas-Fort Worth",
+        reviewUrl: "https://g.page/r/CWQuiTYCPk2eEBM/review"
+      },
+      fw: {
+        name: "Fort Worth",
+        reviewUrl: "https://g.page/r/Cd7ifjlkPA7pEAE/review"
+      },
+      chicago: {
+        name: "Chicago",
+        reviewUrl: "https://g.page/r/CcjXaOph-UEaEAE/review"
+      }
+    };
+
+    const FEEDBACK_ENDPOINT =
+      "https://wetwtmcfxllbpibvzw2qq7gfzy0bfrmy.lambda-url.us-east-1.on.aws/";
+
+    // ── Parse URL params ────────────────────────────────────────────
+    const params  = new URLSearchParams(window.location.search);
+    const firstName  = (params.get("n") || "").trim();
+    const marketCode = (params.get("m") || "").trim().toLowerCase();
+    const contactId  = (params.get("c") || "").trim();
+    const market     = MARKETS[marketCode] || null;
+
+    // ── Set greeting ────────────────────────────────────────────────
+    const headline = document.getElementById("greeting-headline");
+    if (firstName) {
+      headline.textContent = "Hi " + firstName + "! 👋";
+    }
+
+    // ── Show/hide helpers ───────────────────────────────────────────
+    function show(id)   { document.getElementById(id).classList.add("visible"); }
+    function hide(id)   { document.getElementById(id).style.display = "none"; }
+
+    // ── Happy path ──────────────────────────────────────────────────
+    function handleLoved() {
+      hide("screen-main");
+      show("screen-thankyou-positive");
+
+      const url = market ? market.reviewUrl : "https://google.com/search?q=Rover+Cleaners+review";
+      setTimeout(function () {
+        window.location.href = url;
+      }, 1500);
+    }
+
+    // ── Unhappy path ────────────────────────────────────────────────
+    function handleMeh() {
+      hide("screen-main");
+      show("screen-feedback");
+      document.getElementById("feedback-text").focus();
+    }
+
+    // ── Submit feedback ─────────────────────────────────────────────
+    function submitFeedback() {
+      var btn      = document.getElementById("btn-submit");
+      var feedback = document.getElementById("feedback-text").value.trim();
+
+      btn.disabled    = true;
+      btn.textContent = "Sending…";
+
+      var payload = {
+        contactId: contactId,
+        market:    marketCode,
+        firstName: firstName,
+        sentiment: "negative",
+        feedback:  feedback
+      };
+
+      fetch(FEEDBACK_ENDPOINT, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload)
+      })
+      .catch(function () { /* silently swallow errors */ })
+      .finally(function () {
+        hide("screen-feedback");
+        show("screen-thankyou-feedback");
+      });
+    }
+  </script>
+</body>
+</html>
