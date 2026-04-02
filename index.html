@@ -316,13 +316,15 @@
       },
       fw: {
         name: "Fort Worth",
-        reviewUrl: "https://g.page/r/Cd7ifjlkPA7pEAE/review"
+        reviewUrl: "https://search.google.com/local/writereview?placeid=ChIJF3OoCrLtPgoR3uJ-OWQ8Duk"
       },
       chicago: {
         name: "Chicago",
         reviewUrl: "https://g.page/r/CcjXaOph-UEaEAE/review"
       }
     };
+    const DEFAULT_MARKET_CODE = "dfw";
+    const DEFAULT_REVIEW_URL = MARKETS[DEFAULT_MARKET_CODE].reviewUrl;
 
     const FEEDBACK_ENDPOINT =
       "https://wetwtmcfxllbpibvzw2qq7gfzy0bfrmy.lambda-url.us-east-1.on.aws/";
@@ -330,9 +332,27 @@
     // ── Parse URL params ────────────────────────────────────────────
     const params  = new URLSearchParams(window.location.search);
     const firstName  = (params.get("n") || "").trim();
-    const marketCode = (params.get("m") || "").trim().toLowerCase();
+    const requestedMarketCode = (params.get("m") || "").trim().toLowerCase();
+    const marketCode = MARKETS[requestedMarketCode] ? requestedMarketCode : DEFAULT_MARKET_CODE;
     const contactId  = (params.get("c") || "").trim();
-    const market     = MARKETS[marketCode] || null;
+    const market     = MARKETS[marketCode];
+
+    // Shared-page market links:
+    // /?m=dfw
+    // /?m=fw
+    // /?m=chicago
+    function buildMarketLink(code, extraParams) {
+      const url = new URL(window.location.origin + window.location.pathname);
+      url.searchParams.set("m", code);
+
+      if (extraParams) {
+        Object.entries(extraParams).forEach(function ([key, value]) {
+          if (value) url.searchParams.set(key, value);
+        });
+      }
+
+      return url.toString();
+    }
 
     // ── Set greeting ────────────────────────────────────────────────
     const headline = document.getElementById("greeting-headline");
@@ -349,7 +369,7 @@
       hide("screen-main");
       show("screen-thankyou-positive");
 
-      const url = market ? market.reviewUrl : "https://google.com/search?q=Rover+Cleaners+review";
+      const url = market.reviewUrl || DEFAULT_REVIEW_URL;
       setTimeout(function () {
         window.location.href = url;
       }, 1500);
