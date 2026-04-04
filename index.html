@@ -369,6 +369,25 @@
       hide("screen-main");
       show("screen-thankyou-positive");
 
+      // Fire-and-forget tracking ping — we do NOT await this. The redirect
+      // to Google happens regardless so the customer never sees a delay,
+      // and if the ping fails we just lose a tracking row (non-critical).
+      try {
+        var payload = {
+          contactId: contactId,
+          market:    marketCode,
+          firstName: firstName,
+          sentiment: "positive"
+        };
+        // Use keepalive so the request survives the navigation below.
+        fetch(FEEDBACK_ENDPOINT, {
+          method:    "POST",
+          headers:   { "Content-Type": "application/json" },
+          body:      JSON.stringify(payload),
+          keepalive: true
+        }).catch(function () { /* ignore */ });
+      } catch (e) { /* ignore */ }
+
       const url = market.reviewUrl || DEFAULT_REVIEW_URL;
       setTimeout(function () {
         window.location.href = url;
