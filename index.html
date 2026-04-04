@@ -398,9 +398,14 @@
         feedback:  feedback
       };
 
+      // NOTE: using text/plain intentionally to avoid a CORS preflight.
+      // The Lambda parses the body as JSON either way. This keeps the
+      // request as a CORS "simple request" so it works from any origin
+      // (review.rovercleaners.com, kennythexu.github.io, etc.) without
+      // needing to update the Lambda's allowed-origin list.
       fetch(FEEDBACK_ENDPOINT, {
         method:  "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
         body:    JSON.stringify(payload)
       })
       .catch(function () { /* silently swallow errors */ })
