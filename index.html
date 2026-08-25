@@ -311,14 +311,20 @@
     // ── Brand by hostname ──────────────────────────────────────────
     // The same page serves multiple brand domains; everything falls
     // back to Rover Cleaners on review.rovercleaners.com.
+    // googleReview: false = record the sentiment but never redirect to a
+    // GBP (Pine has no Google listing yet, and Pine-branded customers
+    // must not land on the Rover listing).
     const BRANDS = {
-      "review.rovercleaningserviceschicago.com": "Rover Cleaning Services Chicago",
-      "review.pinecleaningtx.com": "Pine Cleaning Services"
+      "review.rovercleaningserviceschicago.com":
+        { name: "Rover Cleaning Services Chicago", googleReview: true },
+      "review.pinecleaningtx.com":
+        { name: "Pine Cleaning Services", googleReview: false }
     };
-    const BRAND = BRANDS[window.location.hostname] || "Rover Cleaners";
-    document.title = BRAND + " — How'd We Do?";
-    document.querySelector(".logo-name").textContent = BRAND;
-    document.querySelector(".footer").textContent = "© " + BRAND;
+    const BRAND = BRANDS[window.location.hostname] ||
+      { name: "Rover Cleaners", googleReview: true };
+    document.title = BRAND.name + " — How'd We Do?";
+    document.querySelector(".logo-name").textContent = BRAND.name;
+    document.querySelector(".footer").textContent = "© " + BRAND.name;
 
     // ── Market config ──────────────────────────────────────────────
     const MARKETS = {
@@ -381,6 +387,12 @@
     // ── Happy path ──────────────────────────────────────────────────
     function handleLoved() {
       hide("screen-main");
+      if (!BRAND.googleReview) {
+        // No GBP for this brand: thank them and stop — the tracking ping
+        // below still records the positive sentiment in Airtable.
+        document.querySelector("#screen-thankyou-positive p").innerHTML =
+          "We're so glad you had a great experience.<br>Thanks for letting us know!";
+      }
       show("screen-thankyou-positive");
 
       // Fire-and-forget tracking ping — we do NOT await this. The redirect
@@ -402,10 +414,12 @@
         }).catch(function () { /* ignore */ });
       } catch (e) { /* ignore */ }
 
-      const url = market.reviewUrl || DEFAULT_REVIEW_URL;
-      setTimeout(function () {
-        window.location.href = url;
-      }, 1500);
+      if (BRAND.googleReview) {
+        const url = market.reviewUrl || DEFAULT_REVIEW_URL;
+        setTimeout(function () {
+          window.location.href = url;
+        }, 1500);
+      }
     }
 
     // ── Unhappy path ────────────────────────────────────────────────
