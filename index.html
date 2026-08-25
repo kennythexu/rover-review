@@ -308,6 +308,18 @@
   </div>
 
   <script>
+    // ── Brand by hostname ──────────────────────────────────────────
+    // The same page serves multiple brand domains; everything falls
+    // back to Rover Cleaners on review.rovercleaners.com.
+    const BRANDS = {
+      "review.rovercleaningserviceschicago.com": "Rover Cleaning Services Chicago",
+      "review.pinecleaningtx.com": "Pine Cleaning Services"
+    };
+    const BRAND = BRANDS[window.location.hostname] || "Rover Cleaners";
+    document.title = BRAND + " — How'd We Do?";
+    document.querySelector(".logo-name").textContent = BRAND;
+    document.querySelector(".footer").textContent = "© " + BRAND;
+
     // ── Market config ──────────────────────────────────────────────
     const MARKETS = {
       dfw: {
