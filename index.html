@@ -294,7 +294,11 @@
     <div class="thankyou-section" id="screen-thankyou-positive">
       <div class="thankyou-icon positive">🌟</div>
       <h2>Thank you!</h2>
-      <p>We're so glad you had a great experience.<br>Taking you to Google now…</p>
+      <p id="positive-copy">One more favor? A quick Google review helps us a lot, and your cleaner gets a cash bonus for every positive review.</p>
+      <button class="btn btn-submit" id="btn-google" onclick="goToGoogle()" style="margin-top:18px">
+        <span>Leave a Google review</span>
+      </button>
+      <p id="positive-redirect-note" style="margin-top:14px;font-size:0.9em;opacity:0.75">Taking you there in a moment…</p>
     </div>
 
     <!-- Thank You: Feedback submitted -->
@@ -390,8 +394,10 @@
       if (!BRAND.googleReview) {
         // No GBP for this brand: thank them and stop — the tracking ping
         // below still records the positive sentiment in Airtable.
-        document.querySelector("#screen-thankyou-positive p").innerHTML =
-          "We're so glad you had a great experience.<br>Thanks for letting us know!";
+        document.getElementById("positive-copy").innerHTML =
+          "Thanks for letting us know! We'll pass it on to your cleaner.";
+        hide("btn-google");
+        hide("positive-redirect-note");
       }
       show("screen-thankyou-positive");
 
@@ -414,12 +420,17 @@
         }).catch(function () { /* ignore */ });
       } catch (e) { /* ignore */ }
 
+      // Give the bonus line time to be read (was 1.5s: nobody saw it).
+      // The button skips the wait.
       if (BRAND.googleReview) {
-        const url = market.reviewUrl || DEFAULT_REVIEW_URL;
-        setTimeout(function () {
-          window.location.href = url;
-        }, 1500);
+        redirectTimer = setTimeout(goToGoogle, 4000);
       }
+    }
+
+    var redirectTimer = null;
+    function goToGoogle() {
+      if (redirectTimer) { clearTimeout(redirectTimer); redirectTimer = null; }
+      window.location.href = market.reviewUrl || DEFAULT_REVIEW_URL;
     }
 
     // ── Unhappy path ────────────────────────────────────────────────
