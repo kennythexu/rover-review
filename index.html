@@ -316,13 +316,14 @@
     // The same page serves multiple brand domains; everything falls
     // back to Rover Cleaners on review.rovercleaners.com.
     // googleReview: false = record the sentiment but never redirect to a
-    // GBP (Pine has no Google listing yet, and Pine-branded customers
-    // must not land on the Rover listing).
+    // GBP. Pine got its own listing 2026-09-22 (Hillcrest Rd), so Pine now
+    // redirects too — to the Pine listing, never the old Rover one.
     const BRANDS = {
       "review.rovercleaningserviceschicago.com":
         { name: "Rover Cleaning Services Chicago", googleReview: true },
       "review.pinecleaningtx.com":
-        { name: "Pine Cleaning Services", googleReview: false }
+        { name: "Pine Cleaning Services", googleReview: true,
+          reviewUrl: "https://g.page/r/CVmKBUtrF5fxEAI/review" }
     };
     const BRAND = BRANDS[window.location.hostname] ||
       { name: "Rover Cleaners", googleReview: true };
@@ -349,6 +350,10 @@
     };
     const DEFAULT_MARKET_CODE = "dfw";
     const DEFAULT_REVIEW_URL = MARKETS[DEFAULT_MARKET_CODE].reviewUrl;
+    // A brand-level review URL (Pine) overrides the per-market Rover links.
+    function resolveReviewUrl() {
+      return BRAND.reviewUrl || market.reviewUrl || DEFAULT_REVIEW_URL;
+    }
 
     const FEEDBACK_ENDPOINT =
       "https://wetwtmcfxllbpibvzw2qq7gfzy0bfrmy.lambda-url.us-east-1.on.aws/";
@@ -430,7 +435,7 @@
     var redirectTimer = null;
     function goToGoogle() {
       if (redirectTimer) { clearTimeout(redirectTimer); redirectTimer = null; }
-      window.location.href = market.reviewUrl || DEFAULT_REVIEW_URL;
+      window.location.href = resolveReviewUrl();
     }
 
     // ── Unhappy path ────────────────────────────────────────────────
