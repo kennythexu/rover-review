@@ -322,10 +322,13 @@
       "review.rovercleaningserviceschicago.com":
         { name: "Rover Cleaning Services Chicago", googleReview: true },
       "review.pinecleaningtx.com":
-        { name: "Pine Cleaning Services", googleReview: true,
+        { name: "Pine Cleaning Services", googleReview: false,
           // Pine's own GBP (g.page/r/CVmKBUtrF5fxEAI) is ON HOLD per Kenny
-          // 2026-10-02; route TX happy taps to the Chicago listing meanwhile.
-          reviewUrl: "https://g.page/r/CcjXaOph-UEaEAE/review" }
+          // 2026-10-02. Oct 2 - Nov 2 TX happy taps went to the Chicago listing;
+          // Google then filtered new Chicago reviews and removed 8 (Oct 31 - Nov 2),
+          // so Kenny turned the Google step off for TX on Nov 2. Restore with
+          // googleReview: true once Pine's profile is back.
+          reviewUrl: "https://g.page/r/CVmKBUtrF5fxEAI/review" }
     };
     const BRAND = BRANDS[window.location.hostname] ||
       { name: "Rover Cleaners", googleReview: true };
